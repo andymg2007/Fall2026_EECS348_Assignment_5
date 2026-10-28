@@ -21,7 +21,7 @@
     Revised by: Andy Garcia 
     Revision Date: 10/27
     New revisions marked by REVISIONS: 
-    
+
     */
 
     /**
@@ -81,17 +81,17 @@
             // Read 9 rows and 9 columns from the file
             for (int i = 0; i < 9; ++i) { // ** ++i works the same as i++
                 for (int j = 0; j < 9; ++j) {
-                    // REVISION: Check that every expected cell can actually be read.
+                    // REVISION: Checks if the cell at the index can be read
                     if (!(file >> grid[i][j])) {
-                        file.close(); // REVISION: Close the input file before reporting malformed input.
-                        return false; // REVISION: Reject files with fewer than 81 cell values.
+                        file.close(); // REVISION: Closes the file if the character at the index can't be read
+                        return false; // REVISION: Rejects the file if it has less than 81 cell values
                     }
 
-                    // REVISION: Reject anything except underscores and digits 1 through 9.
+                    // REVISION: Checks and rejects anything that is not an _ or 1-9
                     if (grid[i][j] != '_' &&
                         (grid[i][j] < '1' || grid[i][j] > '9')) {
-                        file.close(); // REVISION: Close the input file before returning.
-                        return false; // REVISION: Prevent invalid characters from entering the solver.
+                        file.close(); // REVISION: Closes the file before it returns
+                        return false; // REVISION: Returns false to prevent bad characters from being in the solver function
                     }
 
                     // *** implement check for at least 17 filled squares
@@ -103,28 +103,28 @@
 
             file.close();
 
-            // REVISION: Reject extra cell values so the input contains exactly one 9x9 grid.
+            // REVISION: Reject extra values that exceed the 9x9 grid
             char extraCharacter;
             if (file >> extraCharacter) {
                 return false;
             }
 
-            // REVISION: Preserve the original minimum-filled-cell check.
+            // REVISION: Keep the original filled cell check
             if (filledCells < 17) {
-                return false; // This prevents empty or nearly empty input.
+                return false; // Prevents empty input
             }
 
-            // REVISION: Verify the original clues do not already violate Sudoku rules.
+            // REVISION: Check to see if the values violate the Sudoku rules
             for (int i = 0; i < 9; ++i) {
                 for (int j = 0; j < 9; ++j) {
                     if (grid[i][j] != '_') {
-                        char originalValue = grid[i][j]; // REVISION: Save the clue before temporarily clearing it.
-                        grid[i][j] = '_'; // REVISION: Exclude the clue itself from the validation checks.
-                        bool valid = isValid(i, j, originalValue); // REVISION: Check the clue against its row, column, and box.
-                        grid[i][j] = originalValue; // REVISION: Restore the original clue after checking it.
+                        char originalValue = grid[i][j]; // REVISION: Saves the value before temporarily removing it
+                        grid[i][j] = '_'; // REVISION: Keep the clue excluded from the validation check
+                        bool valid = isValid(i, j, originalValue); // REVISION: Check the clue against its own row and column and 3x3 box
+                        grid[i][j] = originalValue; // REVISION:  Put the clue back after temporarily removing it.
 
                         if (!valid) {
-                            return false; // REVISION: Reject puzzles with conflicting original clues.
+                            return false; // REVISION: Reject the puzzle if original clues conflict
                         }
                     }
                 }
@@ -265,9 +265,9 @@
                 std::cout << "Error: Could not open file " << filename
                         << " or puzzle input is invalid.\n\n";
 
-                // REVISION: Write only the required message when the puzzle cannot be loaded.
+                // REVISION: Write the no solution message when the puzzle does not open
                 outputFile << "No solution found.\n";
-                outputFile.close(); // REVISION: Close the output file after writing the failure message.
+                outputFile.close(); // REVISION: Close file after the error occurs
                 return;
             }
 
@@ -290,7 +290,7 @@
             if (solutionCount == 0) {
                 std::cout << "no solution found\n\n";
 
-                // REVISION: The output file must contain this single line and nothing else.
+                // REVISION: Only put the no solution found message on the output file and nothing else
                 outputFile << "No solution found.\n";
             } else {
                 // *** if solutions exist, print each solution using the size of the solutions vector as limit
@@ -298,25 +298,25 @@
                 for (size_t s = 0; s < solutions.size(); ++s) {
                     std::cout << "Solution " << (s + 1) << ":\n";
 
-                    // REVISION: Write each solution in the same space-separated format as the input.
+                    // REVISION: Write the solution the same way as the input was given
                     for (int i = 0; i < 9; ++i) {
                         for (int j = 0; j < 9; ++j) {
                             std::cout << solutions[s][i][j] << " ";
-                            outputFile << solutions[s][i][j] << " "; // REVISION: Save each cell to the solution file.
+                            outputFile << solutions[s][i][j] << " "; // REVISION: Save each cell to the file piece by piece
                         }
                         std::cout << "\n";
-                        outputFile << "\n"; // REVISION: Preserve one row per line in the output file.
+                        outputFile << "\n"; // REVISION: Keep one row per line on the output file
                     }
 
                     std::cout << "\n";
-                    outputFile << "\n"; // REVISION: Separate multiple solutions with a blank line.
+                    outputFile << "\n"; // REVISION: Seperate the sections with this blank line
                 }
 
-                // REVISION: Append the total solution count as the final line of the output file.
+                // REVISION: Add the total solution count as the final line of the file
                 outputFile << "Solutions found: " << solutionCount << "\n";
             }
 
-            // REVISION: Explicitly close the output file after all results have been written.
+            // REVISION: Close the output file after all results have been put on it
             outputFile.close();
         }
 
